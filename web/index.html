@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hello World</title>
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hello World">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <style>
+    :root { --bg: #f5f7fb; --fg: #111827; --muted: #6b7280; --card: #ffffff; --accent: #2563eb; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0b1120; --fg: #f3f4f6; --muted: #9ca3af; --card: #111827; }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: var(--bg); color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px 16px;
+    }
+    main { width: 100%; max-width: 380px; text-align: center; }
+    h1 { font-size: 28px; margin: 0 0 24px; }
+    button {
+      width: 100%; padding: 18px; font-size: 18px; font-weight: 600; color: #fff;
+      background: var(--accent); border: 0; border-radius: 14px; cursor: pointer;
+    }
+    button:active { opacity: .8; }
+    #status { margin-top: 16px; min-height: 1.4em; color: var(--muted); }
+    #install {
+      display: none; margin-top: 24px; padding: 16px; text-align: left;
+      background: var(--card); border-radius: 14px; line-height: 1.5; font-size: 15px;
+    }
+    #install ol { margin: 8px 0 0; padding-left: 20px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Hello World</h1>
+    <button id="notify">Надіслати сповіщення</button>
+    <p id="status"></p>
+    <div id="install">
+      <strong>На iPhone сповіщення працюють лише зі значка на екрані «Додому»:</strong>
+      <ol>
+        <li>Натисніть «Поділитися» (квадрат зі стрілкою) внизу Safari.</li>
+        <li>Виберіть «На екран Додому» → «Додати».</li>
+        <li>Відкрийте Hello World з екрана «Додому» й натисніть кнопку.</li>
+      </ol>
+    </div>
+  </main>
+  <script>
+    const status = document.getElementById("status");
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const standalone = window.navigator.standalone === true ||
+      window.matchMedia("(display-mode: standalone)").matches;
+
+    if (isIOS && !standalone) document.getElementById("install").style.display = "block";
+
+    const swReady = "serviceWorker" in navigator
+      ? navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready)
+      : Promise.reject(new Error("no sw"));
+    swReady.catch(() => {});
+
+    document.getElementById("notify").addEventListener("click", async () => {
+      if (!("Notification" in window)) {
+        status.textContent = isIOS
+          ? "Спершу додайте застосунок на екран «Додому» (інструкція нижче)."
+          : "Цей браузер не підтримує сповіщення.";
+        return;
+      }
+      let perm = Notification.permission;
+      if (perm === "default") perm = await Notification.requestPermission();
+      if (perm !== "granted") {
+        status.textContent = "Сповіщення заборонено. Дозвольте їх у налаштуваннях телефона.";
+        return;
+      }
+      try {
+        const reg = await swReady;
+        await reg.showNotification("Hello World", {
+          body: "Hello World!",
+          icon: "icon-192.png",
+          tag: "hello-world"
+        });
+        status.textContent = "Сповіщення надіслано ✓";
+      } catch (e) {
+        try {
+          new Notification("Hello World", { body: "Hello World!", icon: "icon-192.png" });
+          status.textContent = "Сповіщення надіслано ✓";
+        } catch (_) {
+          status.textContent = "Не вдалося показати сповіщення.";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
