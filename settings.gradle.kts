@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "HelloWorldNotification"
 include(":app")
+include(":batteryoverlay")

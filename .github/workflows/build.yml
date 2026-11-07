@@ -23,13 +23,20 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
-      - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk HelloWorld.apk
+      - name: Rename APKs
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk HelloWorld.apk
+          cp batteryoverlay/build/outputs/apk/debug/batteryoverlay-debug.apk BatteryOverlay.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: HelloWorld-apk
           path: HelloWorld.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BatteryOverlay-apk
+          path: BatteryOverlay.apk
 
       - name: Publish APK as a release
         uses: softprops/action-gh-release@v2
@@ -38,5 +45,15 @@ jobs:
           name: Hello World APK
           body: Завантажте HelloWorld.apk нижче й відкрийте його на телефоні, щоб встановити.
           files: HelloWorld.apk
+          prerelease: true
+          make_latest: false
+
+      - name: Publish Battery Overlay APK as a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: battery-overlay-apk
+          name: Battery Overlay APK
+          body: Завантажте BatteryOverlay.apk нижче й відкрийте його на телефоні, щоб встановити.
+          files: BatteryOverlay.apk
           prerelease: true
           make_latest: false
