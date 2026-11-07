@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Розумна яскравість</string>
+    <string name="channel_name">Робота автояскравості</string>
+
+    <string name="state_on">Працює</string>
+    <string name="state_off">Вимкнено</string>
+    <string name="enable">Автояскравість</string>
+    <string name="grant_permission">Дозволити змінювати яскравість</string>
+    <string name="permission_hint">Потрібен дозвіл «Зміна системних налаштувань», інакше програма не зможе керувати яскравістю.</string>
+
+    <string name="label_lux">Освітлення</string>
+    <string name="label_brightness">Яскравість</string>
+    <string name="label_sensor">Датчик</string>
+    <string name="lux_value">%1$d лк (зараз %2$d)</string>
+    <string name="brightness_value">%1$d%%</string>
+    <string name="brightness_sun">Максимум (сонячний режим)</string>
+    <string name="sensor_ok">Відкритий</string>
+    <string name="sensor_covered_proximity">Прикритий (датчик наближення) — яскравість зафіксовано</string>
+    <string name="sensor_covered_drop">Схоже, прикритий пальцем — яскравість зафіксовано</string>
+
+    <string name="settings_title">Налаштування</string>
+    <string name="offset_label">Загальна корекція: %1$s%%</string>
+    <string name="darker">Темніше</string>
+    <string name="brighter">Яскравіше</string>
+    <string name="sunlight">Сонячний режим</string>
+    <string name="sunlight_hint">На яскравому сонці дає системі ввімкнути підвищену яскравість екрана (HBM), якщо телефон це підтримує.</string>
+    <string name="learning">Навчатися на моїх змінах</string>
+    <string name="learning_hint">Якщо ви змінюєте яскравість у шторці, програма запам\'ятає це для такого освітлення.</string>
+    <string name="reset">Скинути навчання і корекцію</string>
+    <string name="device_title">Ваш телефон</string>
+
+    <string name="notif_starting">Запуск…</string>
+    <string name="notif_normal">%1$d лк · яскравість %2$d%%</string>
+    <string name="notif_covered">Датчик прикрито · яскравість %1$d%% зафіксовано</string>
+    <string name="notif_sun">%1$d лк · сонячний режим</string>
+    <string name="action_stop">Вимкнути</string>
+
+    <string name="msg_no_permission">Немає дозволу на зміну яскравості. Натисніть «Дозволити змінювати яскравість».</string>
+    <string name="msg_no_sensor">На цьому телефоні немає датчика освітленості.</string>
+    <string name="msg_learned">Вашу яскравість для такого освітлення запам\'ятовано.</string>
+    <string name="msg_manual_hold">Тримаю вашу яскравість, доки освітлення суттєво не зміниться.</string>
+    <string name="msg_system_auto">Увімкнено системну автояскравість, тому програму вимкнено.</string>
+    <string name="msg_reset">Навчання і корекцію скинуто.</string>
+</resources>

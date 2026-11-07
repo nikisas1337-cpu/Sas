@@ -20,16 +20,26 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build debug APK
+      - name: Run unit tests
+        run: ./gradlew :autobrightness:testDebugUnitTest
+
+      - name: Build debug APKs
         run: ./gradlew assembleDebug
 
-      - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk HelloWorld.apk
+      - name: Rename APKs
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk HelloWorld.apk
+          cp autobrightness/build/outputs/apk/debug/autobrightness-debug.apk AutoBrightness.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: HelloWorld-apk
           path: HelloWorld.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AutoBrightness-apk
+          path: AutoBrightness.apk
 
       - name: Publish APK as a release
         uses: softprops/action-gh-release@v2
@@ -38,5 +48,15 @@ jobs:
           name: Hello World APK
           body: Завантажте HelloWorld.apk нижче й відкрийте його на телефоні, щоб встановити.
           files: HelloWorld.apk
+          prerelease: true
+          make_latest: false
+
+      - name: Publish auto-brightness APK as a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-autobrightness
+          name: Розумна яскравість (APK)
+          body: Завантажте AutoBrightness.apk нижче й відкрийте його на телефоні, щоб встановити.
+          files: AutoBrightness.apk
           prerelease: true
           make_latest: false
