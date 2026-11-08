@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v4
         with:
@@ -20,16 +22,59 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build debug APK
+      - name: Build debug APKs
         run: ./gradlew assembleDebug
 
-      - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk HelloWorld.apk
+      - name: Rename APKs
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk HelloWorld.apk
+          cp boost/build/outputs/apk/debug/boost-debug.apk LteBoost.apk
+
+      - name: Send changed APKs to Telegram
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -z "$TG_TOKEN" ] || [ -z "$TG_CHAT" ]; then
+            echo "Секрети TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID не задані, пропускаю"
+            exit 0
+          fi
+          # Надсилаємо лише APK тих програм, код яких змінився в цьому пуші.
+          if [ -z "$BEFORE" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            changed="ALL"
+          else
+            changed=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
+          fi
+          msg=$(git log -1 --format=%s)
+          # Кожна програма — модуль Gradle; знаходимо всі зібрані APK автоматично.
+          for apk in */build/outputs/apk/debug/*-debug.apk; do
+            [ -f "$apk" ] || continue
+            module=${apk%%/*}
+            if [ "$changed" != "ALL" ] && ! echo "$changed" | grep -qE "^($module/|build.gradle.kts|settings.gradle.kts|gradle/)"; then
+              continue
+            fi
+            title=$(grep -oP '(?<=name="app_name">)[^<]+' "$module/src/main/res/values/strings.xml" 2>/dev/null || true)
+            [ -n "$title" ] || title=$module
+            file="$(echo "$title" | tr -cd '[:alnum:]')"
+            [ -n "$file" ] || file=$module
+            cp "$apk" "/tmp/$file.apk"
+            curl -sS --fail-with-body -o /dev/null \
+              --form-string chat_id="$TG_CHAT" \
+              -F document=@"/tmp/$file.apk" \
+              --form-string caption="📦 $title
+          🌿 ${GITHUB_REF_NAME}
+          📝 $msg" \
+              "https://api.telegram.org/bot$TG_TOKEN/sendDocument"
+            echo "Надіслано $title ($apk)"
+          done
 
       - uses: actions/upload-artifact@v4
         with:
-          name: HelloWorld-apk
-          path: HelloWorld.apk
+          name: apks
+          path: |
+            HelloWorld.apk
+            LteBoost.apk
 
       - name: Publish APK as a release
         uses: softprops/action-gh-release@v2
@@ -38,5 +83,15 @@ jobs:
           name: Hello World APK
           body: Завантажте HelloWorld.apk нижче й відкрийте його на телефоні, щоб встановити.
           files: HelloWorld.apk
+          prerelease: true
+          make_latest: false
+
+      - name: Publish LTE Boost APK as a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lte-boost-apk
+          name: LTE Boost APK
+          body: Завантажте LteBoost.apk нижче й відкрийте його на телефоні, щоб встановити. Для роботи потрібен Shizuku.
+          files: LteBoost.apk
           prerelease: true
           make_latest: false

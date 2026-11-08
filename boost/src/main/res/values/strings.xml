@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">LTE Boost</string>
+    <string name="tile_label">4G MAX</string>
+    <string name="tile_on">Увімкнено</string>
+    <string name="tile_off">Вимкнено</string>
+    <string name="tile_working">Зачекайте…</string>
+
+    <string name="btn_enable">⚡ Увімкнути 4G MAX</string>
+    <string name="btn_disable">Вимкнути, повернути як було</string>
+    <string name="btn_grant">Дати доступ через Shizuku</string>
+    <string name="btn_get_shizuku">Встановити Shizuku</string>
+    <string name="btn_add_tile">Додати кнопку в шторку</string>
+    <string name="opt_wifi">Вимикати Wi-Fi (увесь трафік через 4G)</string>
+    <string name="opt_saver">Вимикати енергозбереження</string>
+    <string name="signal_title">Сигнал зараз</string>
+
+    <string name="shizuku_ready">Shizuku: ✓ доступ є</string>
+    <string name="shizuku_not_running">Shizuku: не запущено.\n\n1. Встановіть Shizuku з Google Play.\n2. Налаштування → Про телефон → 7 разів натисніть «Номер версії», щоб увімкнути режим розробника.\n3. Налаштування → Додаткові налаштування → Параметри розробника → увімкніть «Налагодження через Wi-Fi».\n4. Відкрийте Shizuku → «Запуск через бездротову налагодження» і виконайте кроки сполучення.\n\nПісля перезавантаження телефона Shizuku треба запустити знову (п. 4).</string>
+    <string name="shizuku_old">Shizuku: застаріла версія, оновіть її.</string>
+    <string name="shizuku_no_permission">Shizuku: запущено, але доступ ще не надано. Натисніть кнопку нижче.</string>
+    <string name="tile_added">Кнопку додано в шторку</string>
+    <string name="tile_manual">Відкрийте шторку → олівець (редагування) → перетягніть «4G MAX».</string>
+</resources>
