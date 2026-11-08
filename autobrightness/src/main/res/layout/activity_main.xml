@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
+
+        <!-- Власний заголовок замість панелі дій: вона перекривала вміст на Android 15+ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/app_name"
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
         <!-- Стан -->
         <LinearLayout
@@ -38,6 +49,15 @@
                     android:layout_height="48dp"
                     android:contentDescription="@string/enable" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/toggleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:minHeight="56dp"
+                android:text="@string/turn_on"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/permissionButton"

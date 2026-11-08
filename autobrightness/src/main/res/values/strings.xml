@@ -5,6 +5,8 @@
     <string name="state_on">Працює</string>
     <string name="state_off">Вимкнено</string>
     <string name="enable">Автояскравість</string>
+    <string name="turn_on">Увімкнути</string>
+    <string name="turn_off">Вимкнути</string>
     <string name="grant_permission">Дозволити змінювати яскравість</string>
     <string name="permission_hint">Потрібен дозвіл «Зміна системних налаштувань», інакше програма не зможе керувати яскравістю.</string>
 

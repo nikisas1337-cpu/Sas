@@ -3,6 +3,7 @@ package com.example.autobrightness
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.autobrightness.core.Occlusion
 import kotlin.math.roundToInt
 
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sensorText: TextView
     private lateinit var messageText: TextView
     private lateinit var permissionButton: Button
+    private lateinit var toggleButton: Button
     private lateinit var enableSwitch: SwitchCompat
     private lateinit var offsetSeek: SeekBar
     private lateinit var offsetLabel: TextView
@@ -45,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prefs = Prefs(this)
+        setupEdgeToEdge()
 
         stateText = findViewById(R.id.stateText)
         luxText = findViewById(R.id.luxText)
@@ -52,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         sensorText = findViewById(R.id.sensorText)
         messageText = findViewById(R.id.messageText)
         permissionButton = findViewById(R.id.permissionButton)
+        toggleButton = findViewById(R.id.toggleButton)
         enableSwitch = findViewById(R.id.enableSwitch)
         offsetSeek = findViewById(R.id.offsetSeek)
         offsetLabel = findViewById(R.id.offsetLabel)
@@ -60,6 +67,9 @@ class MainActivity : AppCompatActivity() {
         deviceText = findViewById(R.id.deviceText)
 
         permissionButton.setOnClickListener { openWriteSettings() }
+        toggleButton.setOnClickListener {
+            if (BrightnessService.instance != null) BrightnessService.stop(this) else enable()
+        }
 
         enableSwitch.setOnCheckedChangeListener { _, checked ->
             if (updatingUi) return@setOnCheckedChangeListener
@@ -128,6 +138,28 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
     }
 
+    /**
+     * Android 15+ малює вміст під системними панелями. Відсуваємо його на висоту
+     * рядка стану та панелі навігації, щоб нічого не ховалося.
+     */
+    private fun setupEdgeToEdge() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val night = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = !night
+            isAppearanceLightNavigationBars = !night
+        }
+        val root = findViewById<View>(R.id.root)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
+    }
+
     private fun enable() {
         prefs.enabled = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -159,8 +191,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun render(s: Status) {
         updatingUi = true
-        enableSwitch.isChecked = s.running || (prefs.enabled && BrightnessService.instance != null)
+        val on = s.running || (prefs.enabled && BrightnessService.instance != null)
+        enableSwitch.isChecked = on
         updatingUi = false
+        toggleButton.text = getString(if (on) R.string.turn_off else R.string.turn_on)
 
         stateText.text = getString(if (s.running) R.string.state_on else R.string.state_off)
         if (s.running && s.lux >= 0f) {

@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.AutoBrightness" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="Theme.AutoBrightness" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">#5D4037</item>
         <item name="colorPrimaryDark">#3E2723</item>
         <item name="colorAccent">@color/accent</item>
