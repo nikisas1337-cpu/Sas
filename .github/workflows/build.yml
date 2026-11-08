@@ -47,21 +47,27 @@ jobs:
             changed=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
           fi
           msg=$(git log -1 --format=%s)
-          send() {
-            module=$1; apk=$2; title=$3
-            if [ "$changed" = "ALL" ] || echo "$changed" | grep -qE "^($module/|build.gradle.kts|settings.gradle.kts|gradle/)"; then
-              curl -sS --fail-with-body -o /dev/null \
-                --form-string chat_id="$TG_CHAT" \
-                -F document=@"$apk" \
-                --form-string caption="📦 $title
+          # Кожна програма — модуль Gradle; знаходимо всі зібрані APK автоматично.
+          for apk in */build/outputs/apk/debug/*-debug.apk; do
+            [ -f "$apk" ] || continue
+            module=${apk%%/*}
+            if [ "$changed" != "ALL" ] && ! echo "$changed" | grep -qE "^($module/|build.gradle.kts|settings.gradle.kts|gradle/)"; then
+              continue
+            fi
+            title=$(grep -oP '(?<=name="app_name">)[^<]+' "$module/src/main/res/values/strings.xml" 2>/dev/null || true)
+            [ -n "$title" ] || title=$module
+            file="$(echo "$title" | tr -cd '[:alnum:]')"
+            [ -n "$file" ] || file=$module
+            cp "$apk" "/tmp/$file.apk"
+            curl -sS --fail-with-body -o /dev/null \
+              --form-string chat_id="$TG_CHAT" \
+              -F document=@"/tmp/$file.apk" \
+              --form-string caption="📦 $title
           🌿 ${GITHUB_REF_NAME}
           📝 $msg" \
-                "https://api.telegram.org/bot$TG_TOKEN/sendDocument"
-              echo "Надіслано $apk"
-            fi
-          }
-          send app HelloWorld.apk "Hello World"
-          send boost LteBoost.apk "LTE Boost"
+              "https://api.telegram.org/bot$TG_TOKEN/sendDocument"
+            echo "Надіслано $title ($apk)"
+          done
 
       - uses: actions/upload-artifact@v4
         with:

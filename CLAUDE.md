@@ -10,10 +10,9 @@
 
 ### Коли створюєш нову програму
 
-1. Створи новий модуль і додай `include(":назва")` у `settings.gradle.kts`.
-2. У `build.yml` у кроці **Rename APKs** скопіюй `назва/build/outputs/apk/debug/назва-debug.apk` у `Назва.apk`, додай файл у `upload-artifact`.
-3. У кроці **Send changed APKs to Telegram** додай рядок `send назва Назва.apk "Назва програми"`.
-4. Закоміть і запуш. Дочекайся завершення workflow і перевір у лозі кроку Telegram рядок «Надіслано …».
+1. Створи новий модуль і додай `include(":назва")` у `settings.gradle.kts`. Задай `app_name` у `назва/src/main/res/values/strings.xml`: це назва в підписі в Telegram.
+2. Закоміть і запуш. Workflow сам знайде APK нового модуля й надішле його в Telegram, правити `build.yml` не треба.
+3. Дочекайся завершення workflow і перевір у лозі кроку Telegram рядок «Надіслано …». Якщо збірка впала, виправ і запуш знову.
 
 ### Якщо користувач просить «відправ APK у бота»
 
