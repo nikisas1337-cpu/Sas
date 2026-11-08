@@ -25,3 +25,11 @@
 Root не потрібен, але потрібен [Shizuku](https://shizuku.rikka.app/): він дає застосунку права ADB. Запускається один раз після кожного перезавантаження через «Бездротове налагодження», без комп'ютера.
 
 Збірка: `./gradlew :boost:assembleDebug`. Готовий APK GitHub Actions публікує в релізі `lte-boost-apk`.
+
+## APK у Telegram
+
+Після кожної збірки GitHub Actions надсилає в Telegram APK тих програм, код яких змінився. Потрібні два секрети репозиторію (Settings → Secrets and variables → Actions):
+- `TELEGRAM_BOT_TOKEN` — токен бота від @BotFather;
+- `TELEGRAM_CHAT_ID` — ваш числовий ID (його показує @userinfobot).
+
+Без секретів крок просто пропускається.
